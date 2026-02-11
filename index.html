@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promise Day | Forever & Always</title>
+    <style>
+        :root { --gold: #fde047; --deep-purple: #2e1065; --pink: #f472b6; }
+        body { margin: 0; height: 100vh; background: #0f172a; color: white; font-family: 'Arial', sans-serif; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+
+        /* Magic Night Background */
+        .bg { position: absolute; width: 100%; height: 100%; background: radial-gradient(circle at top, var(--deep-purple) 0%, #020617 100%); z-index: 0; }
+        .star { position: absolute; background: white; border-radius: 50%; opacity: 0.5; animation: twinkle 3s infinite; }
+        @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+        .container { position: relative; z-index: 10; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); padding: 30px; border-radius: 40px; border: 2px solid var(--gold); text-align: center; width: 85%; max-width: 380px; box-shadow: 0 0 40px rgba(253, 224, 71, 0.2); }
+
+        /* --- PINKY PROMISE ANIMATION --- */
+        .promise-box { height: 150px; display: flex; justify-content: center; align-items: center; font-size: 80px; position: relative; }
+        .hand { display: inline-block; transition: 0.5s ease; }
+        .hand.l { transform: translateX(10px) rotate(10deg); }
+        .hand.r { transform: translateX(-10px) rotate(-10deg) scaleX(-1); }
+        
+        .locked .hand.l { transform: translateX(25px) rotate(0deg); }
+        .locked .hand.r { transform: translateX(-25px) rotate(0deg) scaleX(-1); }
+        .heart-pop { position: absolute; font-size: 40px; opacity: 0; bottom: 40%; transition: 0.5s; }
+        .locked .heart-pop { opacity: 1; transform: translateY(-50px); }
+
+        h2 { color: var(--gold); text-shadow: 0 0 10px var(--gold); margin-bottom: 5px; }
+        #status-msg { font-size: 0.9rem; color: #cbd5e1; min-height: 40px; margin-bottom: 15px; }
+
+        input { width: 85%; padding: 15px; border-radius: 20px; border: 1px solid var(--gold); background: rgba(0,0,0,0.5); color: white; outline: none; margin-bottom: 15px; }
+        .btn { background: var(--gold); color: #000; padding: 18px; border: none; border-radius: 50px; width: 100%; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.3s; }
+        .btn:active { transform: scale(0.95); }
+
+        /* Success Screen */
+        #success-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #020617; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 100; text-align: center; }
+    </style>
+</head>
+<body onclick="startVoice()">
+
+<div class="bg" id="star-map"></div>
+
+<div class="container" id="app">
+    <div class="promise-box" id="promiseDisplay">
+        <span class="hand l">🤙</span>
+        <span class="heart-pop">💖</span>
+        <span class="hand r">🤙</span>
+    </div>
+
+    <h2>Promise Day 🤝</h2>
+    <p id="status-msg">Tap anywhere to hear my promise...</p>
+
+    <input type="text" id="promiseInput" placeholder="Enter a promise to lock it...">
+    <button class="btn" onclick="lockPromise()">LOCK PROMISE 🔒</button>
+</div>
+
+<div id="success-screen">
+    <div style="font-size: 100px;">🤝✨</div>
+    <h1 style="color: var(--gold);">Promise Locked!</h1>
+    <p style="padding: 0 40px; line-height: 1.6;">"A promise is not just words, it's a piece of my heart given to you forever. I promise to always be your peace."</p>
+    <button class="btn" style="width: auto; padding: 15px 40px;" onclick="location.reload()">Together Forever ❤️</button>
+</div>
+
+<script>
+    // Create Stars
+    const map = document.getElementById('star-map');
+    for(let i=0; i<50; i++) {
+        const s = document.createElement('div');
+        s.className = 'star';
+        s.style.width = s.style.height = Math.random()*3+'px';
+        s.style.top = Math.random()*100+'%'; s.style.left = Math.random()*100+'%';
+        map.appendChild(s);
+    }
+
+    let voiceStarted = false;
+    let promiseCount = 0;
+
+    function speak(text) {
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(text);
+        msg.pitch = 1.1; msg.rate = 0.9;
+        window.speechSynthesis.speak(msg);
+    }
+
+    function startVoice() {
+        if(!voiceStarted) {
+            speak("Happy Promise Day! I promise to stay by your side forever. What do you promise me?");
+            document.getElementById('status-msg').innerText = "I'm listening to your promises...";
+            voiceStarted = true;
+        }
+    }
+
+    function lockPromise() {
+        const input = document.getElementById('promiseInput');
+        if(!input.value) return;
+
+        promiseCount++;
+        const box = document.getElementById('promiseDisplay');
+        
+        // Animation
+        box.classList.add('locked');
+        speak("I have locked that promise in my heart.");
+
+        // Send to your Formspree
+        fetch("https://formspree.io/f/mjgeklvr", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ Promise: input.value })
+        });
+
+        setTimeout(() => {
+            box.classList.remove('locked');
+            input.value = "";
+            if(promiseCount >= 3) {
+                document.getElementById('success-screen').style.display = 'flex';
+                speak("Happy Promise Day! Our bond is now unbreakable.");
+            } else {
+                document.getElementById('status-msg').innerText = `Promise ${promiseCount}/3 locked!`;
+            }
+        }, 1500);
+    }
+</script>
+
+</body>
+</html>
