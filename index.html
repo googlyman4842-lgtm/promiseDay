@@ -3,122 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Promise Day | Forever & Always</title>
+    <title>Promise Day | Forever Yours</title>
     <style>
-        :root { --gold: #fde047; --deep-purple: #2e1065; --pink: #f472b6; }
-        body { margin: 0; height: 100vh; background: #0f172a; color: white; font-family: 'Arial', sans-serif; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        :root { --gold: #fbbf24; --gold-glow: rgba(251, 191, 36, 0.4); --deep: #020617; }
+        body { margin: 0; height: 100vh; background: var(--deep); color: white; font-family: 'Georgia', serif; display: flex; justify-content: center; align-items: center; overflow: hidden; }
 
-        /* Magic Night Background */
-        .bg { position: absolute; width: 100%; height: 100%; background: radial-gradient(circle at top, var(--deep-purple) 0%, #020617 100%); z-index: 0; }
-        .star { position: absolute; background: white; border-radius: 50%; opacity: 0.5; animation: twinkle 3s infinite; }
-        @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        /* Shimmering Particle Background */
+        canvas { position: absolute; top: 0; left: 0; z-index: 1; }
 
-        .container { position: relative; z-index: 10; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); padding: 30px; border-radius: 40px; border: 2px solid var(--gold); text-align: center; width: 85%; max-width: 380px; box-shadow: 0 0 40px rgba(253, 224, 71, 0.2); }
+        .container { 
+            position: relative; z-index: 10; 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(20px); 
+            padding: 40px 25px; 
+            border-radius: 50px; 
+            border: 1px solid var(--gold); 
+            text-align: center; 
+            width: 85%; max-width: 380px; 
+            box-shadow: 0 0 50px var(--gold-glow);
+        }
 
-        /* --- PINKY PROMISE ANIMATION --- */
-        .promise-box { height: 150px; display: flex; justify-content: center; align-items: center; font-size: 80px; position: relative; }
-        .hand { display: inline-block; transition: 0.5s ease; }
-        .hand.l { transform: translateX(10px) rotate(10deg); }
-        .hand.r { transform: translateX(-10px) rotate(-10deg) scaleX(-1); }
+        /* --- MAGIC PINKY PROMISE --- */
+        .promise-visual { height: 160px; position: relative; display: flex; justify-content: center; align-items: center; }
+        .hand { font-size: 85px; filter: drop-shadow(0 0 10px var(--gold)); transition: 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .hand.l { transform: rotate(15deg) translateX(15px); }
+        .hand.r { transform: rotate(-15deg) translateX(-15px) scaleX(-1); }
         
-        .locked .hand.l { transform: translateX(25px) rotate(0deg); }
-        .locked .hand.r { transform: translateX(-25px) rotate(0deg) scaleX(-1); }
-        .heart-pop { position: absolute; font-size: 40px; opacity: 0; bottom: 40%; transition: 0.5s; }
-        .locked .heart-pop { opacity: 1; transform: translateY(-50px); }
+        .locked .hand.l { transform: rotate(0deg) translateX(35px); }
+        .locked .hand.r { transform: rotate(0deg) translateX(-35px) scaleX(-1); }
+        
+        .glow-ring { 
+            position: absolute; width: 100px; height: 100px; 
+            border: 2px solid var(--gold); border-radius: 50%; 
+            opacity: 0; transition: 0.5s; 
+        }
+        .locked .glow-ring { opacity: 1; transform: scale(1.5); box-shadow: 0 0 30px var(--gold); }
 
-        h2 { color: var(--gold); text-shadow: 0 0 10px var(--gold); margin-bottom: 5px; }
-        #status-msg { font-size: 0.9rem; color: #cbd5e1; min-height: 40px; margin-bottom: 15px; }
+        h2 { color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin: 15px 0 5px; }
+        #status-text { font-style: italic; color: #d1d5db; min-height: 50px; margin-bottom: 20px; font-size: 0.95rem; }
 
-        input { width: 85%; padding: 15px; border-radius: 20px; border: 1px solid var(--gold); background: rgba(0,0,0,0.5); color: white; outline: none; margin-bottom: 15px; }
-        .btn { background: var(--gold); color: #000; padding: 18px; border: none; border-radius: 50px; width: 100%; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.3s; }
-        .btn:active { transform: scale(0.95); }
+        input { 
+            width: 85%; padding: 16px; border-radius: 25px; border: 1px solid var(--gold); 
+            background: rgba(0,0,0,0.6); color: white; outline: none; margin-bottom: 20px;
+            text-align: center; font-size: 1rem;
+        }
 
-        /* Success Screen */
-        #success-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #020617; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 100; text-align: center; }
+        .btn { 
+            background: linear-gradient(45deg, #d97706, #fbbf24); 
+            color: #000; padding: 18px; border: none; border-radius: 50px; 
+            width: 100%; font-weight: bold; cursor: pointer; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3); transition: 0.3s;
+        }
+        .btn:active { transform: scale(0.98); }
+
+        #final-screen { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: var(--deep); display: none; flex-direction: column; 
+            align-items: center; justify-content: center; z-index: 100; text-align: center;
+        }
     </style>
 </head>
-<body onclick="startVoice()">
+<body onclick="initMagic()">
 
-<div class="bg" id="star-map"></div>
+<canvas id="canvas"></canvas>
 
-<div class="container" id="app">
-    <div class="promise-box" id="promiseDisplay">
+<div class="container" id="main-ui">
+    <div class="promise-visual" id="visual">
+        <div class="glow-ring"></div>
         <span class="hand l">🤙</span>
-        <span class="heart-pop">💖</span>
         <span class="hand r">🤙</span>
     </div>
 
-    <h2>Promise Day 🤝</h2>
-    <p id="status-msg">Tap anywhere to hear my promise...</p>
+    <h2>Promise Day</h2>
+    <p id="status-text">Touch the golden ring to begin...</p>
 
-    <input type="text" id="promiseInput" placeholder="Enter a promise to lock it...">
-    <button class="btn" onclick="lockPromise()">LOCK PROMISE 🔒</button>
+    <input type="text" id="pInput" placeholder="Write a promise to me...">
+    <button class="btn" onclick="handlePromise()">LOCK OUR PROMISE ✨</button>
 </div>
 
-<div id="success-screen">
-    <div style="font-size: 100px;">🤝✨</div>
-    <h1 style="color: var(--gold);">Promise Locked!</h1>
-    <p style="padding: 0 40px; line-height: 1.6;">"A promise is not just words, it's a piece of my heart given to you forever. I promise to always be your peace."</p>
-    <button class="btn" style="width: auto; padding: 15px 40px;" onclick="location.reload()">Together Forever ❤️</button>
+<div id="final-screen">
+    <div style="font-size: 100px; filter: drop-shadow(0 0 20px var(--gold));">🤝❤️</div>
+    <h1 style="color: var(--gold);">Forever Starts Today</h1>
+    <p style="padding: 0 40px; line-height: 1.8; font-size: 1.1rem; color: #e5e7eb;">
+        "I promise to be your strength when you are weak, your voice when you are quiet, and your heart when you feel alone. Every breath I take is a promise to love you more."
+    </p>
+    <button class="btn" style="width: auto; padding: 15px 50px;" onclick="location.reload()">Locked Forever ✨</button>
 </div>
 
 <script>
-    // Create Stars
-    const map = document.getElementById('star-map');
-    for(let i=0; i<50; i++) {
-        const s = document.createElement('div');
-        s.className = 'star';
-        s.style.width = s.style.height = Math.random()*3+'px';
-        s.style.top = Math.random()*100+'%'; s.style.left = Math.random()*100+'%';
-        map.appendChild(s);
-    }
+    // Particle System
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    let particles = [];
 
-    let voiceStarted = false;
-    let promiseCount = 0;
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 2;
+            this.speedX = Math.random() * 0.5 - 0.25;
+            this.speedY = Math.random() * 0.5 - 0.25;
+        }
+        update() {
+            this.x += this.speedX; this.y += this.speedY;
+            if(this.x > canvas.width) this.x = 0; if(this.x < 0) this.x = canvas.width;
+            if(this.y > canvas.height) this.y = 0; if(this.y < 0) this.y = canvas.height;
+        }
+        draw() {
+            ctx.fillStyle = '#fbbf24'; ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill();
+        }
+    }
+    for(let i=0; i<80; i++) particles.push(new Particle());
+    function animate() {
+        ctx.clearRect(0,0,canvas.width, canvas.height);
+        particles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Voice & Logic
+    let isStarted = false;
+    let count = 0;
+    const beautifulPromises = [
+        "I promise to always pick you, every single day, without a doubt.",
+        "I promise to listen to your silence when words are too much.",
+        "I promise to hold your hand through the storms and the sunshine.",
+        "I promise that my heart will always be your home."
+    ];
 
     function speak(text) {
         window.speechSynthesis.cancel();
         const msg = new SpeechSynthesisUtterance(text);
-        msg.pitch = 1.1; msg.rate = 0.9;
+        msg.pitch = 0.9; msg.rate = 0.85; // Deep, calm voice
         window.speechSynthesis.speak(msg);
     }
 
-    function startVoice() {
-        if(!voiceStarted) {
-            speak("Happy Promise Day! I promise to stay by your side forever. What do you promise me?");
-            document.getElementById('status-msg').innerText = "I'm listening to your promises...";
-            voiceStarted = true;
+    function initMagic() {
+        if(!isStarted) {
+            speak("Happy Promise Day, my Queen. Today, words become bonds. Give me three promises to lock our destiny.");
+            document.getElementById('status-text').innerText = "I promise to cherish you forever...";
+            isStarted = true;
         }
     }
 
-    function lockPromise() {
-        const input = document.getElementById('promiseInput');
+    function handlePromise() {
+        const input = document.getElementById('pInput');
         if(!input.value) return;
 
-        promiseCount++;
-        const box = document.getElementById('promiseDisplay');
-        
-        // Animation
-        box.classList.add('locked');
-        speak("I have locked that promise in my heart.");
+        count++;
+        const visual = document.getElementById('visual');
+        visual.classList.add('locked');
 
-        // Send to your Formspree
+        // Speak back her promise + a beautiful one from you
+        const myReply = beautifulPromises[count-1];
+        speak("You promised: " + input.value + ". And in return, " + myReply);
+        document.getElementById('status-text').innerText = myReply;
+
+        // Formspree
         fetch("https://formspree.io/f/mjgeklvr", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ Promise: input.value })
+            body: JSON.stringify({ Her_Promise: input.value, My_Reply: myReply })
         });
 
         setTimeout(() => {
-            box.classList.remove('locked');
+            visual.classList.remove('locked');
             input.value = "";
-            if(promiseCount >= 3) {
-                document.getElementById('success-screen').style.display = 'flex';
-                speak("Happy Promise Day! Our bond is now unbreakable.");
-            } else {
-                document.getElementById('status-msg').innerText = `Promise ${promiseCount}/3 locked!`;
+            if(count >= 3) {
+                setTimeout(() => {
+                    document.getElementById('main-ui').style.display = 'none';
+                    document.getElementById('final-screen').style.display = 'flex';
+                    speak("Happy Promise Day. Our souls are now tied by these words. I love you.");
+                }, 1500);
             }
-        }, 1500);
+        }, 3000);
     }
 </script>
 
